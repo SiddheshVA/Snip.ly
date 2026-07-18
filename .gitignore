@@ -1,0 +1,30 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# IDEs and Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Local database and data files
+data/
+*.db
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

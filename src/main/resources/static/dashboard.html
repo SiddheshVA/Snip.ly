@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Snip.ly</title>
+  <meta name="description" content="Manage your short links and track click analytics on your Snip.ly dashboard."/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand">
+      <div class="logo-icon">✂️</div>
+      <span>Snip<span style="color: var(--accent)">.</span>ly</span>
+    </a>
+    <div class="navbar-nav">
+      <span id="userGreeting" style="font-size:0.85rem;color:var(--text-muted);margin-right:8px;"></span>
+      <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main style="padding: 40px 0 80px;">
+  <div class="container">
+
+    <!-- Header Row -->
+    <div class="section-header" style="margin-bottom:32px;">
+      <div>
+        <h1 class="section-title" style="font-size:1.6rem;">My Links</h1>
+        <p class="section-subtitle">Manage and track all your shortened URLs</p>
+      </div>
+      <button class="btn btn-primary" onclick="openCreateModal()">
+        ✂️ New Short Link
+      </button>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-grid" style="margin: 0 0 32px;">
+      <div class="stat-card">
+        <div class="stat-number" id="statTotalLinks">—</div>
+        <div class="stat-label">Total Links</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statTotalClicks">—</div>
+        <div class="stat-label">Total Clicks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="statTopLink">—</div>
+        <div class="stat-label">Most Clicked Link</div>
+      </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="dashboardAlert" class="alert" style="margin-bottom:16px;"></div>
+
+    <!-- Two Column Dashboard Layout -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
+      
+      <!-- Left Column: URL List -->
+      <div>
+        <div id="urlList" class="url-list">
+          <!-- Skeleton loaders while loading -->
+          <div class="url-item skeleton" style="height:90px;"></div>
+          <div class="url-item skeleton" style="height:90px;opacity:0.6;"></div>
+          <div class="url-item skeleton" style="height:90px;opacity:0.4;"></div>
+        </div>
+      </div>
+
+      <!-- Right Column: Instant QR Generator Card -->
+      <div class="stat-card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px; border: 1px solid var(--border); background: var(--bg-card);">
+        <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 4px;">📱 Instant QR Generator</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px;">Create a direct QR code for LinkedIn, GitHub, or any website without shortening it.</p>
+        
+        <div class="form-group" style="margin-bottom: 8px;">
+          <input type="url" id="instantQrUrl" class="form-input" placeholder="e.g. https://linkedin.com/in/username" required style="width: 100%; box-sizing: border-box;"/>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="generateInstantQr()" id="instantQrBtn">Generate QR Code</button>
+        
+        <!-- Preview & Download Section (hidden initially) -->
+        <div id="instantQrPreviewArea" style="display: none; text-align: center; margin-top: 16px; flex-direction: column; align-items: center; gap: 12px;">
+          <img id="instantQrPreviewImg" src="" alt="QR Preview" style="width:160px; height:160px; border:1px solid var(--border); border-radius:8px; padding:6px; background:#fff;" />
+          <a id="instantQrDownloadBtn" href="" download="instant-qrcode.png" class="btn btn-secondary btn-sm btn-full" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Download Image</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- ===== CREATE URL MODAL ===== -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">✂️ Create Short Link</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('createModal')">✕</button>
+    </div>
+
+    <div id="createAlert" class="alert" style="margin-bottom:16px;"></div>
+
+    <form onsubmit="createUrl(event)" style="display:flex;flex-direction:column;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">Long URL *</label>
+        <input type="url" id="modalLongUrl" class="form-input" placeholder="https://very-long-url.com/path?query=value" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title (optional)</label>
+        <input type="text" id="modalTitle" class="form-input" placeholder="e.g. Product Launch"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Custom Alias (optional)</label>
+          <input type="text" id="modalAlias" class="form-input" placeholder="e.g. my-promo" maxlength="20" pattern="[a-zA-Z0-9_-]{3,20}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expires in (hours)</label>
+          <input type="number" id="modalExpiry" class="form-input" placeholder="e.g. 24" min="1" max="8760"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <button type="button" class="btn btn-secondary btn-full" onclick="closeModal('createModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-full" id="createBtn">
+          <span id="createBtnText">Create Link</span>
+          <span id="createBtnSpinner" class="spinner" style="display:none;"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== ANALYTICS MODAL ===== -->
+<div class="modal-overlay" id="analyticsModal">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-header">
+      <h2 class="modal-title">📊 Analytics</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('analyticsModal')">✕</button>
+    </div>
+    <div id="analyticsContent" style="padding-bottom:16px;">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== QR CODE MODAL ===== -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal" style="max-width:360px; text-align:center;">
+    <div class="modal-header">
+      <h2 class="modal-title">📱 QR Code</h2>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('qrModal')">✕</button>
+    </div>
+    <div style="padding: 20px 0;">
+      <img id="qrCodeImg" src="" alt="QR Code" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;padding:8px;background:#fff;" />
+      <p id="qrCodeText" style="font-size:0.85rem;color:var(--text-secondary);margin-top:12px;word-break:break-all;"></p>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn btn-secondary btn-full" onclick="closeModal('qrModal')">Close</button>
+      <a id="qrDownloadLink" href="" download="qrcode.png" class="btn btn-primary btn-full" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Download</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COPY TOAST ===== -->
+<div class="toast" id="copyToast">✅ Copied to clipboard!</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

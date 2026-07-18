@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: url-shortener
+
+  # ===== H2 DATABASE (No Docker Needed) =====
+  datasource:
+    url: jdbc:h2:file:./data/urlshortener;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  # H2 Console (visit http://localhost:8080/h2-console to inspect DB)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update       # Auto-creates/updates tables from entities
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ===== CAFFEINE CACHE (No Redis Needed) =====
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=10m   # Cache 10k entries for 10 minutes
+
+  # ===== SECURITY =====
+  security:
+    user:
+      name: admin    # Disables Spring Boot default security (we use JWT)
+
+# ===== SERVER =====
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# ===== JWT CONFIGURATION =====
+app:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970   # 256-bit hex secret
+    expiration-ms: 86400000   # 24 hours in milliseconds
+  base-url: http://localhost:8080
+
+# ===== SPRINGDOC / SWAGGER =====
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# ===== LOGGING =====
+logging:
+  level:
+    com.urlshortener: DEBUG
+    org.springframework.security: WARN
+
+---
+# ===================================================
+# PRODUCTION PROFILE (switch to PostgreSQL + Redis)
+# Run with: java -jar app.jar --spring.profiles.active=postgres
+# ===================================================
+spring:
+  config:
+    activate:
+      on-profile: postgres
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/urlshortener
+    driver-class-name: org.postgresql.Driver
+    username: urluser
+    password: urlpassword
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+  h2:
+    console:
+      enabled: false
+
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379

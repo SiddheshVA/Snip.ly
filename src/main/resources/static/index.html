@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snip.ly — Smart URL Shortener</title>
+  <meta name="description" content="Shorten long URLs instantly. Track clicks, analyze traffic, and share smarter links with Snip.ly."/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand">
+      <div class="logo-icon">✂️</div>
+      <span>Snip<span style="color: var(--accent)">.</span>ly</span>
+    </a>
+    <div class="navbar-nav" id="navbarNav">
+      <a href="/auth.html" class="btn btn-ghost btn-sm" id="navLoginBtn">Login</a>
+      <a href="/dashboard.html" class="btn btn-primary btn-sm" id="navDashboardBtn" style="display:none">Dashboard</a>
+      <button class="btn btn-secondary btn-sm" id="navLogoutBtn" style="display:none">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">⚡ Fast • Free • Powerful</div>
+    <h1>Shorten URLs,<br><span>Track Everything</span></h1>
+    <p>Transform long, ugly URLs into clean, memorable links. Built with Spring Boot — blazing fast with real-time analytics.</p>
+
+    <!-- SHORTENER FORM -->
+    <div class="shortener-card" id="shortenerCard">
+      <div id="homeAlert" class="alert" style="margin-bottom:16px;"></div>
+
+      <div class="url-input-row">
+        <input
+          type="url"
+          id="longUrlInput"
+          class="form-input"
+          placeholder="🔗 Paste your long URL here... (https://)"
+          autocomplete="off"
+        />
+        <button class="btn btn-primary btn-lg" id="shortenBtn" onclick="shortenUrl()">
+          <span id="shortenBtnText">Shorten</span>
+          <span id="shortenBtnSpinner" class="spinner" style="display:none;"></span>
+        </button>
+      </div>
+
+      <!-- Options row (visible when logged in) -->
+      <div class="options-row" id="optionsRow" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Custom Alias (optional)</label>
+          <input type="text" id="customAlias" class="form-input" placeholder="e.g. my-promo" maxlength="20"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expires in (hours, optional)</label>
+          <input type="number" id="expiryHours" class="form-input" placeholder="e.g. 24" min="1" max="8760"/>
+        </div>
+      </div>
+
+      <p id="loginNudge" style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">
+        💡 <a href="/auth.html">Log in</a> to use custom aliases, set expiry & track analytics
+      </p>
+
+      <!-- RESULT BOX -->
+      <div class="result-box" id="resultBox">
+        <div style="flex:1">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Your short URL is ready! 🎉</div>
+          <div class="result-url" id="resultUrl"></div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="copyUrl()">📋 Copy</button>
+        <a id="resultLink" href="#" target="_blank" class="btn btn-ghost btn-sm">Open ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section style="padding: 0 0 60px;">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">⚡ 1ms</div>
+        <div class="stat-label">Average Redirect Speed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">🔒 JWT</div>
+        <div class="stat-label">Secure Authentication</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">📊 Live</div>
+        <div class="stat-label">Real-time Analytics</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section style="padding: 0 0 80px;">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:40px;">
+      <h2 style="font-size:1.8rem; margin-bottom:10px;">Everything you need</h2>
+      <p style="color:var(--text-secondary)">Built with Java Spring Boot. Production-grade. Open source.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>Instant Shortening</h3>
+        <p>Paste any URL and get a short link in milliseconds. Powered by Base62 encoding on auto-increment IDs.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Click Analytics</h3>
+        <p>Track every click — device type, browser, location, and referrer. Visualized in real-time on your dashboard.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3>Custom Aliases</h3>
+        <p>Create branded short links like <code style="color:var(--accent)">snip.ly/my-sale</code> instead of random codes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3>Link Expiry</h3>
+        <p>Set links to expire after a fixed time. Perfect for limited-time offers and temporary sharing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Caffeine Cache</h3>
+        <p>Short codes cached in RAM for ~1ms redirects. No database hit on repeat clicks. Ultra-fast.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>JWT Security</h3>
+        <p>Stateless JWT authentication. Your links belong to you — no one else can edit or delete them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="border-top: 1px solid var(--border); padding: 24px 0; text-align:center; color: var(--text-muted); font-size:0.85rem;">
+  <div class="container">
+    Built with ☕ Spring Boot + ❤️ by Siddharth &nbsp;|&nbsp;
+    <a href="/swagger-ui.html" target="_blank">API Docs (Swagger)</a> &nbsp;|&nbsp;
+    <a href="/h2-console" target="_blank">H2 Console</a>
+  </div>
+</footer>
+
+<!-- ===== COPY TOAST ===== -->
+<div class="toast" id="copyToast">✅ Copied to clipboard!</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

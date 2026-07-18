@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — Snip.ly</title>
+  <meta name="description" content="Sign in or create your Snip.ly account to manage and track your short links."/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <a href="/" class="auth-logo" style="text-decoration:none; color:var(--text-primary);">
+      <div class="logo-icon" style="width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;">✂️</div>
+      Snip<span style="color:var(--accent)">.</span>ly
+    </a>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" id="registerTab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Alert -->
+    <div id="authAlert" class="alert" style="margin-bottom:16px;"></div>
+
+    <!-- LOGIN FORM -->
+    <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="loginEmail" class="form-input" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div style="position:relative;">
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password" style="padding-right:44px;"/>
+          <button type="button" onclick="togglePassword('loginPassword', this)"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full btn-lg" id="loginBtn">
+        <span id="loginBtnText">Sign In</span>
+        <span id="loginBtnSpinner" class="spinner" style="display:none;"></span>
+      </button>
+    </form>
+
+    <!-- REGISTER FORM (hidden by default) -->
+    <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="regName" class="form-input" placeholder="Siddharth" required autocomplete="name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="regEmail" class="form-input" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div style="position:relative;">
+          <input type="password" id="regPassword" class="form-input" placeholder="Min 6 characters" required autocomplete="new-password" style="padding-right:44px;" minlength="6"/>
+          <button type="button" onclick="togglePassword('regPassword', this)"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full btn-lg" id="registerBtn">
+        <span id="registerBtnText">Create Account</span>
+        <span id="registerBtnSpinner" class="spinner" style="display:none;"></span>
+      </button>
+    </form>
+
+    <div class="divider">or</div>
+    <a href="/" class="btn btn-ghost btn-full" style="justify-content:center;">
+      ← Back to Home
+    </a>
+
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+</body>
+</html>
